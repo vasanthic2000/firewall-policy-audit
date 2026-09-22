@@ -1,0 +1,11 @@
+rule_name,source,destination,service,action,log,status,description
+Allow-Web-Outbound,10.10.0.0/16,any,http,allow,yes,enabled,Outbound web for corp users
+Allow-Web-Outbound-Dup,10.10.0.0/16,any,http,allow,yes,enabled,Duplicate of above rule
+Allow-DNS-Internal,10.10.0.0/16,10.20.0.5,dns,allow,yes,enabled,Internal DNS queries
+Allow-Any-Any-Temp,any,any,any,allow,no,enabled,Temporary rule from migration - never removed
+Allow-Vendor-Access,any,10.30.4.0/24,any,allow,no,enabled,
+Allow-DB-AppTier,10.40.1.0/24,10.50.2.0/24,mssql,allow,yes,enabled,App to DB tier
+Allow-SSH-Jumpbox,10.10.5.10,10.60.0.0/24,ssh,allow,yes,enabled,Admin SSH via jumpbox
+Block-Malicious-Outbound,any,any,any,deny,yes,enabled,Default threat prevention
+Old-Decommissioned-Rule,10.99.0.0/16,any,any,allow,yes,disabled,Decommissioned site - pending cleanup
+Allow-SMTP-Relay,10.70.0.25,any,smtp,allow,yes,enabled,Outbound mail relay

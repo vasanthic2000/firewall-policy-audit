@@ -1,0 +1,10 @@
+rule_name,source,destination,service,action,log,status,description
+outside-in-101,any,192.168.10.0/24,https,allow,yes,enabled,Partner portal access
+outside-in-102,any,192.168.10.0/24,any,allow,no,enabled,
+inside-out-201,192.168.20.0/24,any,http,allow,yes,enabled,User web traffic
+inside-out-202,192.168.20.0/24,any,https,allow,yes,enabled,User web traffic
+dmz-db-301,192.168.30.0/24,192.168.40.10,oracle-db,allow,yes,enabled,Web tier to DB
+mgmt-ssh-401,192.168.50.5,192.168.0.0/16,ssh,allow,yes,enabled,NOC jumpbox access
+temp-any-999,any,any,any,allow,no,enabled,Temporary - remove after cutover
+deny-all-1000,any,any,any,deny,yes,enabled,Implicit deny with logging
+old-vpn-rule,any,192.168.60.0/24,any,allow,yes,disabled,Retired VPN concentrator
