@@ -1,0 +1,95 @@
+# =====================================================================
+# Firewall Policy Audit — check definitions
+#
+# Enable, disable, or tune checks here without touching audit.py.
+# To add your own check, copy one of the blocks below, give it a new
+# ID, and set its type and conditions.
+#
+# Check types:
+#   pattern        - fires when ALL conditions match.
+#                    A condition value of "any" means the field is
+#                    effectively any (any, 0.0.0.0/0, ::/0).
+#                    A condition value of "empty" means the field is blank.
+#   no_logging     - fires on allow rules with logging disabled.
+#   no_description - fires on allow rules with no description.
+#   disabled       - fires on disabled rules (cleanup candidates).
+#   shadowed       - fires when an identical allow rule appeared earlier.
+# =====================================================================
+
+# Exit non-zero when findings at or above these severities exist,
+# so the tool can gate a CI pipeline or scheduled audit job.
+fail_on: [CRITICAL, HIGH]
+
+# Rules to skip entirely (exact rule_name match). Useful for
+# documented exceptions approved through change control.
+ignore_rules: []
+
+checks:
+  - id: FWA-001
+    severity: CRITICAL
+    enabled: true
+    type: pattern
+    description: "Allow rule with ANY source, ANY destination and ANY service"
+    message: "Rule '{name}' allows ANY source to ANY destination on ANY service."
+    remediation: "Remove this rule or restrict it to the minimum required scope."
+    conditions:
+      action: allow
+      source: any
+      destination: any
+      service: any
+
+  - id: FWA-002
+    severity: HIGH
+    enabled: true
+    type: pattern
+    description: "Allow rule with ANY source"
+    message: "Rule '{name}' allows ANY source to '{destination}'. Restrict to known subnets."
+    remediation: "Replace the 'any' source with the specific vendor or partner subnets."
+    skip_when_matched: [FWA-001]
+    conditions:
+      action: allow
+      source: any
+
+  - id: FWA-003
+    severity: MEDIUM
+    enabled: true
+    type: pattern
+    description: "Allow rule with ANY service"
+    message: "Rule '{name}' allows ANY service to '{destination}'. Restrict to required ports."
+    remediation: "Limit the service to the specific ports the application requires."
+    skip_when_matched: [FWA-001]
+    conditions:
+      action: allow
+      service: any
+
+  - id: FWA-004
+    severity: MEDIUM
+    enabled: true
+    type: no_logging
+    description: "Allow rule with logging disabled"
+    message: "Rule '{name}' has logging disabled — allowed traffic will be invisible to the SOC."
+    remediation: "Enable logging on all allow rules."
+
+  - id: FWA-005
+    severity: LOW
+    enabled: true
+    type: no_description
+    description: "Allow rule with no description"
+    message: "Rule '{name}' has no description — undocumented rules cannot be reviewed."
+    remediation: "Add a description stating purpose, owner and ticket reference."
+
+  - id: FWA-006
+    severity: INFO
+    enabled: true
+    type: disabled
+    description: "Disabled rule (cleanup candidate)"
+    message: "Rule '{name}' is disabled — remove it if permanently decommissioned."
+    remediation: "Delete the rule, or document why it is retained."
+
+  - id: FWA-007
+    severity: HIGH
+    enabled: true
+    type: shadowed
+    description: "Rule shadowed by an earlier identical rule"
+    message: "Rule '{name}' is shadowed by an earlier identical rule — it is redundant."
+    remediation: "Remove the redundant rule to keep the policy reviewable."
